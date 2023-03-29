@@ -33,7 +33,6 @@ function getMostCommonGenres(books) {
    .sort((a, b) => b.count - a.count)
    .slice(0, 5);
  }
- 
  function getMostPopularBooks(books) {
   return books
    .map((book) => {
@@ -43,6 +42,35 @@ function getMostCommonGenres(books) {
    .slice(0, 5);
  }
  
+ //this is where i used reduce()
+ function getMostPopularAuthors(books, authors) {
+  const authorList = books.reduce((acc, book) => { 
+    const { authorId, borrows } = book;
+    const authorObj = authors.find(author => author.id === authorId);
+    const name = `${authorObj.name.first} ${authorObj.name.last}`;
+    const count = borrows.length;
+    const authExists = acc.find(auth => auth.name === name);
+    if(authExists) {
+      authExists.count += count;
+    } else {
+      const newAuthEntry = {
+        name,
+        count
+      };
+      acc.push(newAuthEntry);
+    }
+    return acc;
+  }, []);
+  const sortedAuthorList = authorList.sort((a, b) => b.count - a.count);
+  const topFive = sortedAuthorList.slice(0, 5);
+
+  return topFive;
+}
+
+ //This is the helper function for mostPopularAuthors
+ function mostPopularHelper (array) {
+  return array.sort((a, b) => b.count - a.count).slice(0, 5);
+ }
  function getMostPopularAuthors(books, authors) {
   let result = [];
   authors.forEach((author) => {
@@ -57,7 +85,7 @@ function getMostCommonGenres(books) {
    });
    result.push(theAuthor);
   });
-  return result.sort((a, b) => b.count - a.count).slice(0, 5);
+  return mostPopularHelper(result);
  }
 
 module.exports = {
